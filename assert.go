@@ -12,21 +12,18 @@ import (
 func Equal(t *testing.T, expected, actual interface{}) {
 	markAsHelper(t)
 
-	if expected == nil {
-		if actual == nil {
+	if isNil(expected) || isNil(actual) {
+		if isNil(expected) && isNil(actual) {
 			return
 		}
 
-		val := reflect.ValueOf(actual)
-		if val.IsValid() && !val.IsNil() {
-			t.Fatalf("\nExpected:\n%v\ngot:\n%v", expected, actual)
-		}
+		t.Fatalf("\nExpected:\n%v\ngot:\n%v", expected, actual)
 	}
 
 	val := reflect.ValueOf(expected)
 	typ := reflect.TypeOf(actual)
 
-	if val.IsValid() && val.Type().ConvertibleTo(typ) {
+	if val.Type().ConvertibleTo(typ) {
 		eval := val.Convert(typ).Interface()
 
 		// Check for NaN. NaN is the only value that is not equal to itself.
@@ -52,8 +49,12 @@ func NotEqual(t *testing.T, expected, actual interface{}) {
 	// Shortcut the nil check by abusing Go's == nil. This will catch early any
 	// nil assertion early. Be it the literal nil value or the zero value of a
 	// referential type.
-	if expected == nil && actual == nil {
-		t.Fatalf("\nExpected:\n%v\nto _not_ equal:\n%v", expected, actual)
+	if isNil(expected) || isNil(actual) {
+		if isNil(expected) && isNil(actual) {
+			t.Fatalf("\nExpected:\n%v\nto _not_ equal:\n%v", expected, actual)
+		}
+
+		return
 	}
 
 	typ := reflect.TypeOf(actual)
@@ -119,4 +120,23 @@ func Len(t *testing.T, length int, v interface{}) {
 	default:
 		t.Fatalf("Cannot get the length of %v", val)
 	}
+}
+
+func isNil(v interface{}) bool {
+	if v == nil {
+		return true
+	}
+
+	vv, ok := v.(reflect.Value)
+	if !ok {
+		vv = reflect.ValueOf(v)
+	}
+
+	switch vv.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Map, reflect.Ptr, reflect.Interface, reflect.Slice:
+		return vv.IsNil()
+	}
+
+	return false
+
 }

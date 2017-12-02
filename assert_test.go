@@ -16,6 +16,8 @@ func TestEqual(t *testing.T) {
 
 func TestNotEqual(t *testing.T) {
 	NotEqual(t, math.NaN(), math.MaxFloat32)
+	NotEqual(t, nil, struct{}{})
+	NotEqual(t, struct{}{}, nil)
 }
 
 func TestNil(t *testing.T) {

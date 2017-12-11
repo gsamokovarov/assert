@@ -18,7 +18,7 @@ func Equal(t *testing.T, expected, actual interface{}) {
 			return
 		}
 
-		t.Fatalf("\nExpected:\n%v\ngot:\n%v", expected, actual)
+		Diff(t, true, expected, actual)
 	}
 
 	val := reflect.ValueOf(expected)
@@ -38,7 +38,7 @@ func Equal(t *testing.T, expected, actual interface{}) {
 		}
 
 		if !reflect.DeepEqual(eval, actual) {
-			t.Fatalf("\nExpected:\n%v\ngot:\n%v", eval, actual)
+			Diff(t, true, eval, actual)
 		}
 	}
 }
@@ -52,7 +52,7 @@ func NotEqual(t *testing.T, expected, actual interface{}) {
 	// referential type.
 	if isNil(expected) || isNil(actual) {
 		if isNil(expected) && isNil(actual) {
-			t.Fatalf("\nExpected:\n%v\nto _not_ equal:\n%v", expected, actual)
+			Diff(t, false, expected, actual)
 		}
 
 		return
@@ -69,13 +69,13 @@ func NotEqual(t *testing.T, expected, actual interface{}) {
 		if eval, ok := eval.(float64); ok {
 			if actual := actual.(float64); ok {
 				if math.IsNaN(eval) && math.IsNaN(actual) {
-					t.Fatalf("\nExpected:\n%v\nto not equal:\n%v", eval, actual)
+					Diff(t, false, eval, actual)
 				}
 			}
 		}
 
 		if reflect.DeepEqual(eval, actual) {
-			t.Fatalf("\nExpected:\n%v\nto not equal: %v", eval, actual)
+			Diff(t, false, eval, actual)
 		}
 	}
 }

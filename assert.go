@@ -11,7 +11,7 @@ import (
 
 // Equal tests two objects for equality.
 func Equal(t *testing.T, expected, actual interface{}) {
-	markAsHelper(t)
+	Mark(t)
 
 	if isNil(expected) || isNil(actual) {
 		if isNil(expected) && isNil(actual) {
@@ -45,7 +45,7 @@ func Equal(t *testing.T, expected, actual interface{}) {
 
 // NotEqual tests two objects for inequality.
 func NotEqual(t *testing.T, expected, actual interface{}) {
-	markAsHelper(t)
+	Mark(t)
 
 	// Shortcut the nil check by abusing Go's == nil. This will catch early any
 	// nil assertion early. Be it the literal nil value or the zero value of a
@@ -82,28 +82,28 @@ func NotEqual(t *testing.T, expected, actual interface{}) {
 
 // True stops the current test if the assertion is false.
 func True(t *testing.T, assertion bool) {
-	markAsHelper(t)
+	Mark(t)
 
 	Equal(t, true, assertion)
 }
 
 // False stops the current test if the assertion is true.
 func False(t *testing.T, assertion bool) {
-	markAsHelper(t)
+	Mark(t)
 
 	Equal(t, false, assertion)
 }
 
 // Nil stops the current test if the values is not nil.
 func Nil(t *testing.T, v interface{}) {
-	markAsHelper(t)
+	Mark(t)
 
 	Equal(t, nil, v)
 }
 
 // NotNil stops the current test if the values is nil.
 func NotNil(t *testing.T, v interface{}) {
-	markAsHelper(t)
+	Mark(t)
 
 	NotEqual(t, nil, v)
 }
@@ -115,7 +115,7 @@ var Present = NotNil
 // string does not match the optional message. The message can be given in
 // parts that would be joined by the empty string.
 func Error(t *testing.T, err error, message ...string) {
-	markAsHelper(t)
+	Mark(t)
 
 	NotNil(t, err)
 	if len(message) != 0 {
@@ -126,7 +126,7 @@ func Error(t *testing.T, err error, message ...string) {
 // Len stops the current test if the value doesn't have the expected length.
 // Only arrays, chans, maps, slices and strings can have length calculated.
 func Len(t *testing.T, length int, v interface{}) {
-	markAsHelper(t)
+	Mark(t)
 
 	val := reflect.Indirect(reflect.ValueOf(v))
 

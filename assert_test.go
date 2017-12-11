@@ -42,8 +42,16 @@ func TestNotNil(t *testing.T) {
 	NotNil(t, &struct{ A int }{A: 42})
 }
 
-func TestLen(t *testing.T) {
+func TestError(t *testing.T) {
 	Len(t, 1, []interface{}{"foo"})
 	Len(t, 1, &[]interface{}{"foo"})
 	Len(t, 0, []interface{}{})
+}
+
+func TestLen(t *testing.T) {
+	err := errors.New("assert: error")
+
+	Error(t, err)
+	Error(t, err, "assert: error")
+	Error(t, err, "assert: ", "error")
 }

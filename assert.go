@@ -5,6 +5,7 @@ package assert
 import (
 	"math"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -105,6 +106,18 @@ func NotNil(t *testing.T, v interface{}) {
 	markAsHelper(t)
 
 	NotEqual(t, nil, v)
+}
+
+// Error stops the current test if the values is nil error, or it's Error()
+// string does not match the optional message. The message can be given in
+// parts that would be joined by the empty string.
+func Error(t *testing.T, err error, message ...string) {
+	markAsHelper(t)
+
+	NotNil(t, err)
+	if len(message) != 0 {
+		Equal(t, strings.Join(message, ""), err.Error())
+	}
 }
 
 // Len stops the current test if the value doesn't have the expected length.

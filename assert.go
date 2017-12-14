@@ -24,22 +24,24 @@ func Equal(t *testing.T, expected, actual interface{}) {
 	val := reflect.ValueOf(expected)
 	typ := reflect.TypeOf(actual)
 
-	if val.Type().ConvertibleTo(typ) {
-		eval := val.Convert(typ).Interface()
+	if !val.Type().ConvertibleTo(typ) {
+		t.Fatalf("Cannot compare %v with %v", expected, actual)
+	}
 
-		// Check for NaN. NaN is the only value that is not equal to itself.
-		// That's why all the drama.
-		if eval, ok := eval.(float64); ok {
-			if actual := actual.(float64); ok {
-				if math.IsNaN(eval) && math.IsNaN(actual) {
-					return
-				}
+	eval := val.Convert(typ).Interface()
+
+	// Check for NaN. NaN is the only value that is not equal to itself.
+	// That's why all the drama.
+	if eval, ok := eval.(float64); ok {
+		if actual := actual.(float64); ok {
+			if math.IsNaN(eval) && math.IsNaN(actual) {
+				return
 			}
 		}
+	}
 
-		if !reflect.DeepEqual(eval, actual) {
-			Diff(t, true, eval, actual)
-		}
+	if !reflect.DeepEqual(eval, actual) {
+		Diff(t, true, eval, actual)
 	}
 }
 
@@ -61,22 +63,24 @@ func NotEqual(t *testing.T, expected, actual interface{}) {
 	typ := reflect.TypeOf(actual)
 	val := reflect.ValueOf(expected)
 
-	if val.IsValid() && val.Type().ConvertibleTo(typ) {
-		eval := val.Convert(typ).Interface()
+	if !val.Type().ConvertibleTo(typ) {
+		t.Fatalf("Cannot compare %v with %v", expected, actual)
+	}
 
-		// Check for NaN. NaN is the only value that is not equal to itself.
-		// That's why all the drama.
-		if eval, ok := eval.(float64); ok {
-			if actual := actual.(float64); ok {
-				if math.IsNaN(eval) && math.IsNaN(actual) {
-					Diff(t, false, eval, actual)
-				}
+	eval := val.Convert(typ).Interface()
+
+	// Check for NaN. NaN is the only value that is not equal to itself.
+	// That's why all the drama.
+	if eval, ok := eval.(float64); ok {
+		if actual := actual.(float64); ok {
+			if math.IsNaN(eval) && math.IsNaN(actual) {
+				Diff(t, false, eval, actual)
 			}
 		}
+	}
 
-		if reflect.DeepEqual(eval, actual) {
-			Diff(t, false, eval, actual)
-		}
+	if reflect.DeepEqual(eval, actual) {
+		Diff(t, false, eval, actual)
 	}
 }
 

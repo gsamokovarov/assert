@@ -25,7 +25,7 @@ func Equal(t *testing.T, expected, actual interface{}) {
 	typ := reflect.TypeOf(actual)
 
 	if !val.Type().ConvertibleTo(typ) {
-		t.Fatalf("Cannot compare %v with %v", expected, actual)
+		t.Fatalf("Cannot compare %v with %v", val.Type(), typ)
 	}
 
 	eval := val.Convert(typ).Interface()
@@ -64,7 +64,7 @@ func NotEqual(t *testing.T, expected, actual interface{}) {
 	val := reflect.ValueOf(expected)
 
 	if !val.Type().ConvertibleTo(typ) {
-		t.Fatalf("Cannot compare %v with %v", expected, actual)
+		t.Fatalf("Cannot compare %v with %v", val.Type(), typ)
 	}
 
 	eval := val.Convert(typ).Interface()
@@ -158,5 +158,4 @@ func isNil(v interface{}) bool {
 	}
 
 	return false
-
 }

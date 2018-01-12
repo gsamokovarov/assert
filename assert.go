@@ -112,9 +112,6 @@ func NotNil(t *testing.T, v interface{}) {
 	NotEqual(t, nil, v)
 }
 
-// Present is an alias for NotNil.
-var Present = NotNil
-
 // Error stops the current test if the values is nil error, or it's Error()
 // string does not match the optional message. The message can be given in
 // parts that would be joined by the empty string.

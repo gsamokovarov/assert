@@ -84,35 +84,35 @@ func NotEqual(t *testing.T, expected, actual interface{}) {
 	}
 }
 
-// True stops the current test if the assertion is false.
+// True fails the current test if the assertion is false.
 func True(t *testing.T, assertion bool) {
 	Mark(t)
 
 	Equal(t, true, assertion)
 }
 
-// False stops the current test if the assertion is true.
+// False fails the current test if the assertion is true.
 func False(t *testing.T, assertion bool) {
 	Mark(t)
 
 	Equal(t, false, assertion)
 }
 
-// Nil stops the current test if the values is not nil.
+// Nil fails the current test if the values is not nil.
 func Nil(t *testing.T, v interface{}) {
 	Mark(t)
 
 	Equal(t, nil, v)
 }
 
-// NotNil stops the current test if the values is nil.
+// NotNil fails the current test if the values is nil.
 func NotNil(t *testing.T, v interface{}) {
 	Mark(t)
 
 	NotEqual(t, nil, v)
 }
 
-// Error stops the current test if the values is nil error, or it's Error()
+// Error fails the current test if the values is nil error, or it's Error()
 // string does not match the optional message. The message can be given in
 // parts that would be joined by the empty string.
 func Error(t *testing.T, err error, message ...string) {
@@ -124,7 +124,7 @@ func Error(t *testing.T, err error, message ...string) {
 	}
 }
 
-// Len stops the current test if the value doesn't have the expected length.
+// Len fails the current test if the value doesn't have the expected length.
 // Only arrays, chans, maps, slices and strings can have length calculated.
 func Len(t *testing.T, length int, v interface{}) {
 	Mark(t)
@@ -137,4 +137,17 @@ func Len(t *testing.T, length int, v interface{}) {
 	default:
 		t.Fatalf("Cannot get the length of %v", val)
 	}
+}
+
+// Panc fails the current test if the given function does not panic.
+func Panic(t *testing.T, fn func()) {
+	Mark(t)
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Fatalf("Expected a panic")
+		}
+	}()
+
+	fn()
 }

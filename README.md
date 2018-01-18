@@ -15,6 +15,7 @@ The library exposes the following assertions:
 - `NotNil(t *testing.T, v interface{})`
 - `Error(t *testing.T, err error, message string...)`
 - `Len(t *testing.T, length int, v interface{})`
+- `Panic(t *testing.T, fn func())`
 
 With the following aliases:
 
@@ -53,8 +54,7 @@ prettier diffs.
 ```go
 assert.Diff = func(t *testing.T, _ bool, expected, actual interface{}) {
 	// Don't forget to mark the function, to hint go test to skip this
-	// frame when reporting the error to the user. You want to see the error
-	// in application code, not in the source of assert.
+	// frame when reporting the error to the user.
 	assert.Mark(t)
 
 	if diff := deep.Equal(expected, actual); diff != nil {

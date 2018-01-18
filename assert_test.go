@@ -55,3 +55,9 @@ func TestLen(t *testing.T) {
 	Error(t, err, "assert: error")
 	Error(t, err, "assert: ", "error")
 }
+
+func TestPanic(t *testing.T) {
+	Panic(t, func() {
+		panic("pass")
+	})
+}

@@ -61,3 +61,9 @@ func TestPanic(t *testing.T) {
 		panic("pass")
 	})
 }
+
+func TestChaining(t *testing.T) {
+	err := errors.New("assert: error")
+
+	Present(t, err).Error(t, err, "assert: error")
+}

@@ -3,151 +3,70 @@
 package assert
 
 import (
-	"math"
-	"reflect"
-	"strings"
 	"testing"
 )
 
-// Equal tests two objects for equality.
-func Equal(t *testing.T, expected, actual interface{}) {
+var assertion Assertion
+
+// Equal is the global version of Assertion.Equal.
+func Equal(t *testing.T, expected, actual interface{}) Assertion {
 	Mark(t)
 
-	if isNil(expected) || isNil(actual) {
-		if isNil(expected) && isNil(actual) {
-			return
-		}
-
-		Diff(t, true, expected, actual)
-	}
-
-	val := reflect.ValueOf(expected)
-	typ := reflect.TypeOf(actual)
-
-	if !val.Type().ConvertibleTo(typ) {
-		t.Fatalf("Cannot compare %v with %v", val.Type(), typ)
-	}
-
-	eval := val.Convert(typ).Interface()
-
-	// Check for NaN. NaN is the only value that is not equal to itself.
-	// That's why all the drama.
-	if eval, ok := eval.(float64); ok {
-		if actual := actual.(float64); ok {
-			if math.IsNaN(eval) && math.IsNaN(actual) {
-				return
-			}
-		}
-	}
-
-	if !reflect.DeepEqual(eval, actual) {
-		Diff(t, true, eval, actual)
-	}
+	return assertion.Equal(t, expected, actual)
 }
 
-// NotEqual tests two objects for inequality.
-func NotEqual(t *testing.T, expected, actual interface{}) {
+// NotEqual is the global version of Assertion.Equal.
+func NotEqual(t *testing.T, expected, actual interface{}) Assertion {
 	Mark(t)
 
-	// Shortcut the nil check by abusing Go's == nil. This will catch early any
-	// nil assertion early. Be it the literal nil value or the zero value of a
-	// referential type.
-	if isNil(expected) || isNil(actual) {
-		if isNil(expected) && isNil(actual) {
-			Diff(t, false, expected, actual)
-		}
-
-		return
-	}
-
-	typ := reflect.TypeOf(actual)
-	val := reflect.ValueOf(expected)
-
-	if !val.Type().ConvertibleTo(typ) {
-		t.Fatalf("Cannot compare %v with %v", val.Type(), typ)
-	}
-
-	eval := val.Convert(typ).Interface()
-
-	// Check for NaN. NaN is the only value that is not equal to itself.
-	// That's why all the drama.
-	if eval, ok := eval.(float64); ok {
-		if actual := actual.(float64); ok {
-			if math.IsNaN(eval) && math.IsNaN(actual) {
-				Diff(t, false, eval, actual)
-			}
-		}
-	}
-
-	if reflect.DeepEqual(eval, actual) {
-		Diff(t, false, eval, actual)
-	}
+	return assertion.NotEqual(t, expected, actual)
 }
 
-// True fails the current test if the assertion is false.
-func True(t *testing.T, assertion bool) {
+// True is the global version of Assertion.Equal.
+func True(t *testing.T, cond bool) Assertion {
 	Mark(t)
 
-	Equal(t, true, assertion)
+	return assertion.True(t, cond)
 }
 
-// False fails the current test if the assertion is true.
-func False(t *testing.T, assertion bool) {
+// False is the global version of Assertion.Equal.
+func False(t *testing.T, cond bool) Assertion {
 	Mark(t)
 
-	Equal(t, false, assertion)
+	return assertion.False(t, cond)
 }
 
-// Nil fails the current test if the values is not nil.
-func Nil(t *testing.T, v interface{}) {
+// Nil is the global version of Assertion.Nil.
+func Nil(t *testing.T, v interface{}) Assertion {
 	Mark(t)
 
-	Equal(t, nil, v)
+	return assertion.Nil(t, v)
 }
 
-// NotNil fails the current test if the values is nil.
-func NotNil(t *testing.T, v interface{}) {
+// NotNil is the global version of Assertion.NotNil.
+func NotNil(t *testing.T, v interface{}) Assertion {
 	Mark(t)
 
-	NotEqual(t, nil, v)
+	return assertion.NotNil(t, v)
 }
 
-// Error fails the current test if the values is nil error, or it's Error()
-// string does not match the optional message. The message can be given in
-// parts that would be joined by the empty string.
-func Error(t *testing.T, err error, message ...string) {
+// Error is the global version of Assertion.Error.
+func Error(t *testing.T, err error, message ...string) Assertion {
 	Mark(t)
 
-	NotNil(t, err)
-	if len(message) != 0 {
-		Equal(t, strings.Join(message, ""), err.Error())
-	}
+	return assertion.Error(t, err, message...)
 }
 
-// Len fails the current test if the value doesn't have the expected length.
-// Only arrays, chans, maps, slices and strings can have length calculated.
-func Len(t *testing.T, length int, v interface{}) {
+// Len is the global version of Assertion.Len.
+func Len(t *testing.T, length int, v interface{}) Assertion {
 	Mark(t)
 
-	val := reflect.Indirect(reflect.ValueOf(v))
-
-	switch val.Kind() {
-	case reflect.Array, reflect.Chan, reflect.Map, reflect.Slice, reflect.String:
-		Equal(t, length, val.Len())
-	default:
-		t.Fatalf("Cannot get the length of %v", val)
-	}
+	return assertion.Len(t, length, v)
 }
 
-// Panc fails the current test if the given function does not panic.
-func Panic(t *testing.T, fn func()) {
+// Panic is the global version of Assertion.Panic.
+func Panic(t *testing.T, fn func()) Assertion {
 	Mark(t)
 
-	defer func() {
-		if r := recover(); r == nil {
-			t.Fatalf("Expected a panic")
-		}
-	}()
-
-	fn()
+	return assertion.Panic(t, fn)
 }
